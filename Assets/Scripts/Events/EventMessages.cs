@@ -6,4 +6,19 @@ public static class EventMessages
     /// An event for when a timer has finished
     /// </summary>
     public class TimerFinished : UnityEvent { }
+
+    /// <summary>
+    /// An event that indicates that health has changed
+    /// </summary>
+    public class HealthChanged : UnityEvent<float> { }
+
+    /// <summary>
+    /// An event that indicates that the game is over
+    /// </summary>
+    public class GameOver : UnityEvent { }
+
+    /// <summary>
+    /// An event that indicates that the game is over
+    /// </summary>
+    public class GameEnded : UnityEvent { }
 }

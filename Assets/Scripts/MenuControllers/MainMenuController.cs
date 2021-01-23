@@ -23,7 +23,7 @@ public class MainMenuController : MonoBehaviour
         AudioManager.PlaySFX(AudioClipNames.ButtonClick);
 
         //Go to the gameplay scene
-        MenuManager.GoToNextGameplayScene();
+        MenuManager.GoToCurrentGameplayScene();
     }
 
     /// <summary>

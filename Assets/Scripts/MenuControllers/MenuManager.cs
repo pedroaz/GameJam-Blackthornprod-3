@@ -23,7 +23,7 @@ public class MenuManager : MonoBehaviour
     static bool isGamePaused = false;
     static bool isInHelpMenu = false;
 
-    private static int currentGameplayScene = -1;
+    private static int currentGameplayScene = 0;
     private static readonly MenuNames[] sceneOrder = new[] { MenuNames.Gameplay1, MenuNames.Gameplay2, MenuNames.Gameplay3 };
 
     #endregion
@@ -101,6 +101,14 @@ public class MenuManager : MonoBehaviour
     /// Reloads the current gameplay scene
     /// </summary>
     public static void TryCurrentSceneAgain()
+    {
+        GotoMenu(sceneOrder[currentGameplayScene]);
+    }
+
+    /// <summary>
+    /// Goes to the current scene in the ordered array
+    /// </summary>
+    public static void GoToCurrentGameplayScene()
     {
         GotoMenu(sceneOrder[currentGameplayScene]);
     }
