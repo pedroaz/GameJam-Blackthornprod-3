@@ -79,12 +79,18 @@ public class MenuManager : MonoBehaviour
                 Object.Instantiate(Resources.Load("Menus/MenuPause"));
                 break;
             case MenuNames.GameOver:
-                isGamePaused = true;
-                Object.Instantiate(Resources.Load("Menus/MenuGameOver"));
+                GameObject gameOverMenu = Object.Instantiate(Resources.Load("Menus/MenuGameOver")) as GameObject;
+                GameEndedController menuOverScript = gameOverMenu.GetComponent<GameEndedController>();
+
+                //Configures the required fields
+                menuOverScript.SetupMenu(true);
                 break;
             case MenuNames.LevelEnded:
-                isGamePaused = true;
-                Object.Instantiate(Resources.Load("Menus/MenuLevelComplete"));
+                GameObject gameEndedMenu = Object.Instantiate(Resources.Load("Menus/MenuLevelComplete")) as GameObject;
+                GameEndedController menuEndedScript = gameEndedMenu.GetComponent<GameEndedController>();
+
+                //Configures the required fields
+                menuEndedScript.SetupMenu(false);
                 break;
             default:
                 break;

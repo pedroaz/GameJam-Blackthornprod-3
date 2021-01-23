@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class PauseMenuController : MonoBehaviour
 {
@@ -38,6 +39,10 @@ public class PauseMenuController : MonoBehaviour
     /// </summary>
     public void ClosePopUpButtonClick()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Closes the current menu
         Destroy(gameObject);
     }
 
@@ -46,14 +51,22 @@ public class PauseMenuController : MonoBehaviour
     /// </summary>
     public void BackToMenuButtonClick()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Returns to the main menu
         MenuManager.GotoMenu(MenuNames.MainMenu);
     }
 
     /// <summary>
-    /// Quits the game
+    /// Handles the quit button functionality
     /// </summary>
-    public void QuitGameButtonClick()
+    private IEnumerator QuitButtonClickedExec()
     {
+        //Adds a small delay to let the button sound play
+        yield return new WaitForSeconds(AudioManager.GetAudioClipLength(AudioClipNames.ButtonClick) / 2);
+
+        //Quits the game
         Application.Quit();
     }
 }

@@ -28,6 +28,10 @@ public class HelpMenuController : MonoBehaviour
     /// </summary>
     public void ClosePopUpButtonClick()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Closes the current menu
         Destroy(gameObject);
     }
 }

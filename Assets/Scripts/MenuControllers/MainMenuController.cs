@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class MainMenuController : MonoBehaviour
 {
@@ -6,7 +7,7 @@ public class MainMenuController : MonoBehaviour
     private void Start()
     {
         //Plays the Main Menu start effects when returning to this menu
-        AudioManager.PlaySFXFollowedByBGM(new[] { AudioClipNames.MainMenuStart, AudioClipNames.MainMenuMusic });
+        AudioManager.PlayBGM(AudioClipNames.MainMenuMusic);
     }
 
 
@@ -15,6 +16,13 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void StartGameButtonClick()
     {
+        //Stops the currently playing audio
+        AudioManager.StopBGM();
+
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Go to the gameplay scene
         MenuManager.GoToNextGameplayScene();
     }
 
@@ -23,14 +31,22 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void HelpMenuButtonClicked()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Goes to the menu popup
         MenuManager.GotoMenu(MenuNames.HelpMenu);
     }
 
     /// <summary>
-    /// Quits the game
+    /// Handles the quit button functionality
     /// </summary>
-    public void QuitGameButtonClick()
+    private IEnumerator QuitButtonClickedExec()
     {
+        //Adds a small delay to let the button sound play
+        yield return new WaitForSeconds(AudioManager.GetAudioClipLength(AudioClipNames.ButtonClick) / 2);
+
+        //Quits the game
         Application.Quit();
     }
 }
