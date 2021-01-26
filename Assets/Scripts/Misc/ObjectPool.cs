@@ -8,7 +8,8 @@ public enum PooledObjectName
 {
     PlayerBullet,
     EnemyBullet,
-    Enemy
+    Enemy,
+    Explosion
 }
 
 /// <summary>
@@ -19,6 +20,7 @@ public class ObjectPool : MonoBehaviour
     static GameObject prefabEnemyBullet;
     static GameObject prefabPlayerBullet;
     static GameObject prefabEnemy;
+    static GameObject prefabExplosion;
     static Dictionary<PooledObjectName, List<GameObject>> pools;
 
     /// <summary>
@@ -30,12 +32,14 @@ public class ObjectPool : MonoBehaviour
         prefabEnemyBullet = Resources.Load<GameObject>("Ships/EnemyBullet");
         prefabPlayerBullet = Resources.Load<GameObject>("Ships/PlayerBullet");
         prefabEnemy = Resources.Load<GameObject>("Ships/EnemyShip");
+        prefabExplosion = Resources.Load<GameObject>("Animations/Explosion");
 
         // initialize dictionary
         pools = new Dictionary<PooledObjectName, List<GameObject>>();
         pools.Add(PooledObjectName.PlayerBullet, new List<GameObject>(GameConstants.InitialBulletPoolCapacity));
         pools.Add(PooledObjectName.EnemyBullet, new List<GameObject>(GameConstants.InitialBulletPoolCapacity));
         pools.Add(PooledObjectName.Enemy, new List<GameObject>(GameConstants.InitialEnemyPoolCapacity));
+        pools.Add(PooledObjectName.Explosion, new List<GameObject>(GameConstants.InitialExplosionPoolCapacity));
 
         // fill player bullet pool
         pools[PooledObjectName.PlayerBullet] = new List<GameObject>(GameConstants.InitialBulletPoolCapacity);
@@ -56,6 +60,13 @@ public class ObjectPool : MonoBehaviour
         for (int i = 0; i < pools[PooledObjectName.Enemy].Capacity; i++)
         {
             pools[PooledObjectName.Enemy].Add(GetNewObject(PooledObjectName.Enemy));
+        }
+
+        // fill explosion pool
+        pools[PooledObjectName.Explosion] = new List<GameObject>(GameConstants.InitialExplosionPoolCapacity);
+        for (int i = 0; i < pools[PooledObjectName.Explosion].Capacity; i++)
+        {
+            pools[PooledObjectName.Explosion].Add(GetNewObject(PooledObjectName.Explosion));
         }
     }
 
@@ -96,6 +107,15 @@ public class ObjectPool : MonoBehaviour
     public static GameObject GetEnemy()
     {
         return GetPooledObject(PooledObjectName.Enemy);
+    }
+
+    /// <summary>
+    /// Gets an explosion object from the explosions pool
+    /// </summary>
+    /// <returns>bullet</returns>
+    public static GameObject GetExplosion()
+    {
+        return GetPooledObject(PooledObjectName.Explosion);
     }
 
     /// <summary>
@@ -152,6 +172,15 @@ public class ObjectPool : MonoBehaviour
     }
 
     /// <summary>
+    /// Returns an explosion object to the pool
+    /// </summary>
+    /// <param name="explosion">explosion</param>
+    public static void ReturnExplosion(GameObject explosion)
+    {
+        ReturnPooledObject(PooledObjectName.Explosion, explosion);
+    }
+
+    /// <summary>
     /// Returns a pooled object to the pool
     /// </summary>
     /// <param name="name">name of pooled object</param>
@@ -166,6 +195,8 @@ public class ObjectPool : MonoBehaviour
                 break;
             case PooledObjectName.Enemy:
                 obj.GetComponent<Enemy>().Deactivate();
+                break;
+            case PooledObjectName.Explosion:
                 break;
             default: break;
         }
@@ -197,6 +228,11 @@ public class ObjectPool : MonoBehaviour
                 obj = GameObject.Instantiate(prefabEnemy);
                 obj.GetComponent<Enemy>().Initialize();
                 break;
+
+            case PooledObjectName.Explosion:
+                obj = GameObject.Instantiate(prefabExplosion);
+                obj.GetComponent<Explosion>().Initialize();
+                break;
         }
 
         obj.SetActive(false);
@@ -226,5 +262,11 @@ public class ObjectPool : MonoBehaviour
             Destroy(pools[PooledObjectName.Enemy][i]);
         }
         pools[PooledObjectName.Enemy].Clear();
+
+        for (int i = 0; i < pools[PooledObjectName.Explosion].Count - 1; i++)
+        {
+            Destroy(pools[PooledObjectName.Explosion][i]);
+        }
+        pools[PooledObjectName.Explosion].Clear();
     }
 }

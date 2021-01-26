@@ -6,14 +6,23 @@
 public enum BulletDirection
 {
     Up,
-    Down
+    Down,
+    Random
 }
 
 public class Bullet : MonoBehaviour
 {
     Rigidbody2D rb2d;
+
     Vector2 defaultForceVector;
+    float damageDealt = 1.0f;
+
     SpriteRenderer bulletSprite;
+
+    /// <summary>
+    /// Returns the amount of damage this bullet should deal
+    /// </summary>
+    public float DamageDealt { get { return damageDealt; } }
 
     /// <summary>
     /// Initializes object. We don't use Start for this because
@@ -58,6 +67,9 @@ public class Bullet : MonoBehaviour
                 break;
             case BulletDirection.Down:
                 forceVector = Quaternion.AngleAxis(-90, Vector3.forward) * forceVector;
+                break;
+            case BulletDirection.Random:
+                forceVector = Quaternion.AngleAxis(Random.Range(-120,-60), Vector3.forward) * forceVector;
                 break;
             default: break;
         }

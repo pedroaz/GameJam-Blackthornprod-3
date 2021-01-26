@@ -91,12 +91,9 @@ public static class ScreenUtils
         // save screen edges in world coordinates
         float screenZ = -Camera.main.transform.position.z;
         Vector3 lowerLeftCornerScreen = new Vector3(0, 0, screenZ);
-        Vector3 upperRightCornerScreen = new Vector3(
-            screenWidth, screenHeight, screenZ);
-        Vector3 lowerLeftCornerWorld =
-            Camera.main.ScreenToWorldPoint(lowerLeftCornerScreen);
-        Vector3 upperRightCornerWorld =
-            Camera.main.ScreenToWorldPoint(upperRightCornerScreen);
+        Vector3 upperRightCornerScreen = new Vector3(screenWidth, screenHeight, screenZ);
+        Vector3 lowerLeftCornerWorld = Camera.main.ScreenToWorldPoint(lowerLeftCornerScreen);
+        Vector3 upperRightCornerWorld = Camera.main.ScreenToWorldPoint(upperRightCornerScreen);
         screenLeft = lowerLeftCornerWorld.x;
         screenRight = upperRightCornerWorld.x;
         screenTop = upperRightCornerWorld.y;
@@ -108,8 +105,7 @@ public static class ScreenUtils
     /// </summary>
     static void CheckScreenSizeChanged()
     {
-        if (screenWidth != Screen.width ||
-            screenHeight != Screen.height)
+        if (screenWidth != Screen.width || screenHeight != Screen.height)
         {
             Initialize();
         }

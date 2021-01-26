@@ -10,6 +10,7 @@ public enum AudioClipNames
     ButtonClick,
     PlayerBullet,
     PlayerDamage,
+    EnemyDeath,
     MainMenuMusic,
     GameplayMusic0,
     GameplayMusic1,
@@ -61,6 +62,7 @@ public class AudioManager : MonoBehaviour
         audioClips.Add(AudioClipNames.ButtonClick, Resources.Load<AudioClip>("Audio/Effects/"));
         audioClips.Add(AudioClipNames.PlayerBullet, Resources.Load<AudioClip>("Audio/Effects/"));
         audioClips.Add(AudioClipNames.PlayerDamage, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.EnemyDeath, Resources.Load<AudioClip>("Audio/Effects/"));
 
         audioClips.Add(AudioClipNames.MainMenuMusic, Resources.Load<AudioClip>("Audio/BGM/"));
         audioClips.Add(AudioClipNames.GameplayMusic0, Resources.Load<AudioClip>("Audio/BGM/"));
@@ -76,7 +78,12 @@ public class AudioManager : MonoBehaviour
     /// <param name="clip">The audio clip to be played</param>
     public static void PlaySFX(AudioClipNames clip)
     {
-        audioSource_SoundEffects.PlayOneShot(audioClips[clip]);
+        //Only play the sound if it was loaded was loaded
+        audioClips.TryGetValue(clip, out var value);
+        if (value == null) return;
+
+        //Plays the sound
+        audioSource_SoundEffects.PlayOneShot(value);
     }
 
     /// <summary>
@@ -86,6 +93,11 @@ public class AudioManager : MonoBehaviour
     /// <param name="loop">Should the audio be looped</param>
     public static void PlayBGM(AudioClipNames clip, bool loop = true)
     {
+        //Only play the music if it was loaded was loaded
+        audioClips.TryGetValue(clip, out var value);
+        if (value == null) return;
+
+        //Plays the music
         audioSource_BackgroundMusic.clip = audioClips[clip];
         audioSource_BackgroundMusic.loop = loop;
         audioSource_BackgroundMusic.Play();

@@ -60,7 +60,7 @@ public class Ship : MonoBehaviour
 
         // move character to new position and clamp in screen
         transform.position = position;
-        ClampInScreen();
+        transform.position = CommonFunctions.ClampShipInScreen(transform.position, colliderHalfWidth, colliderHalfHeight);
 
         // check for shooting input
         if (Input.GetAxis("Shoot") > 0)
@@ -120,7 +120,7 @@ public class Ship : MonoBehaviour
     /// <summary>
     /// Clamps the ship in the screen
     /// </summary>
-    void ClampInScreen()
+    void ClampInScreen2()
     {
         // clamp position as necessary
         Vector3 position = transform.position;

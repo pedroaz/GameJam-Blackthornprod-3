@@ -8,6 +8,7 @@ TagManager:
   - EnemyShip
   - PlayerBullet
   - EnemyBullet
+  - Waypoint
   layers:
   - Default
   - TransparentFX

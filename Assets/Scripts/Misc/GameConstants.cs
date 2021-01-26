@@ -1,23 +1,33 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class GameConstants
 {
     // Player Ship
     public const float PlayerShootDelaySeconds = 0.1f;
     public const float ShipMoveUnitsPerSecond = 10f;
-    public const float ShipBulletXOffset = 0.1f;
+    public const float ShipBulletXOffset = 0f;
     public const float ShipBulletYOffset = 0.1f;
 
     // Bullets
     public const float BulletImpulseForce = 20f;
 
     // Enemy Ships
-    public const float EnemyImpulseForce = -3f;
-    public const float EnemyBulletXOffset = -0.75f;
-    public const float EnemyBulletYOffset = 0.04f;
-    public const float EnemyShootDelaySeconds = 0.5f;
+    public const float EnemySpawnDelaySeconds = 1.0f;
+    public const float EnemyBulletXOffset = 0f;
+    public const float EnemyBulletYOffset = -0.2f;
+    public static readonly Dictionary<EnemyTypes, EnemyStats> EnemyShipStats
+        = new Dictionary<EnemyTypes, EnemyStats>
+        {
+            //Types of enemy and their respective speed, health, rate of fire and active time
+            {EnemyTypes.Fast, new EnemyStats(2.5f, 1.0f, 0.1f, 1.0f) },
+            {EnemyTypes.Strong, new EnemyStats(1.0f, 2.0f, 0.5f, 1.0f) },
+            {EnemyTypes.Tank, new EnemyStats(0.5f, 5.0f, 1.0f, 1.0f) },
+        };
+
 
     // Object Pools
     public const int InitialBulletPoolCapacity = 150;
     public const int InitialEnemyPoolCapacity = 15;
+    public const int InitialExplosionPoolCapacity = 10;
 }
