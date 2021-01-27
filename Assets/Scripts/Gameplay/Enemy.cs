@@ -123,6 +123,7 @@ public class Enemy : MonoBehaviour
 
         //Sets and starts the timers
         activeTimer.Duration = activeTime;
+        activeTimer.Duration = activeTime*2;
         shootTimer.Duration = shootSpeed;
         shootTimer.Run();
     }
@@ -159,7 +160,7 @@ public class Enemy : MonoBehaviour
         // Prevent overlapping with other ships
         if(collision.gameObject.CompareTag("EnemyShip"))
         {
-            destination += new Vector2(Random.Range(-colliderHalfWidth, colliderHalfWidth) * 1.25f,// 0);
+            destination += new Vector2(Random.Range(-colliderHalfWidth, colliderHalfWidth) * 0.75f,// 0);
                                        Random.Range(-colliderHalfHeight, colliderHalfHeight) * 0.5f);
         }
         // Checks if the ship took damage

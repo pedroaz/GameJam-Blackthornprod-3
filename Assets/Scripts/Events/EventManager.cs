@@ -14,6 +14,9 @@ public class EventManager
     static List<HUD> gameEndedInvokers = new List<HUD>();
     static List<UnityAction> gameEndedListeners = new List<UnityAction>();
 
+    static List<HUD> shieldChangedInvokers = new List<HUD>();
+    static List<UnityAction<float>> shieldChangedListeners = new List<UnityAction<float>>();
+
     #endregion
 
     #region Public methods
@@ -100,6 +103,34 @@ public class EventManager
             invoker.AddGameEndedListener(listener);
         }
         gameEndedListeners.Add(listener);
+    }
+
+    /// <summary>
+    /// Adds a Shield Changed invoker
+    /// </summary>
+    /// <param name="invoker">invoker</param>
+    public static void AddShieldChangedInvoker(HUD invoker)
+    {
+        // add listeners to new invoker and add new invoker to list
+        foreach (UnityAction<float> listener in shieldChangedListeners)
+        {
+            invoker.AddShieldChangedListener(listener);
+        }
+        shieldChangedInvokers.Add(invoker);
+    }
+
+    /// <summary>
+    /// Adds a GameEnded listener
+    /// </summary>
+    /// <param name="listener">listener</param>
+    public static void AddShieldChangedListener(UnityAction<float> listener)
+    {
+        // add as listener to all invokers and add new listener to list
+        foreach (HUD invoker in shieldChangedInvokers)
+        {
+            invoker.AddShieldChangedListener(listener);
+        }
+        shieldChangedListeners.Add(listener);
     }
 
     #endregion

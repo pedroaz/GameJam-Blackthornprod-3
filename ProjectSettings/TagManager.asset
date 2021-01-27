@@ -9,6 +9,7 @@ TagManager:
   - PlayerBullet
   - EnemyBullet
   - Waypoint
+  - Shield
   layers:
   - Default
   - TransparentFX

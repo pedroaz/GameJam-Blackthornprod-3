@@ -9,4 +9,9 @@ public class WaypointManager : Singleton<WaypointManager>
     /// Gets the fixed waypoints on the screen
     /// </summary>
     public GameObject[] FixedWaypoints { get { return fixedWaypoints; } }
+
+    /// <summary>
+    /// Overriding the destroy method to make this persistent
+    /// </summary>
+    private void OnDestroy() { }
 }

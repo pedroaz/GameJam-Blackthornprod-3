@@ -30,13 +30,14 @@ namespace Assets.Scripts.Gameplay
         }
 
         // Update is called once per frame
-        /*void Update()
+        void Update()
         {
             if (Input.GetKeyUp(KeyCode.L))
             {
+                if (spawnTimer.Running) spawnTimer.Stop();
                 SpawnEnemy();
             }
-        }*/
+        }
 
         /// <summary>
         /// Spawns a new enemy and restarts the spawn timer

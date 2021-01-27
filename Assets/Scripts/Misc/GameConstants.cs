@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 
 public class GameConstants
 {
@@ -8,6 +7,10 @@ public class GameConstants
     public const float ShipMoveUnitsPerSecond = 10f;
     public const float ShipBulletXOffset = 0f;
     public const float ShipBulletYOffset = 0.1f;
+    public const float MaxShipHealth = 100.0f;
+    public const int ShipBulletCollisionDamage = 12;
+    public const int ShipEnemyCollisionDamage = 20;
+    public const float ShieldBaseProtectionPercent = 0.8f;
 
     // Bullets
     public const float BulletImpulseForce = 20f;
@@ -25,6 +28,8 @@ public class GameConstants
             {EnemyTypes.Tank, new EnemyStats(0.5f, 5.0f, 1.0f, 1.0f) },
         };
 
+    // HUD
+    public static float ShieldSliderStep = 0.005f;
 
     // Object Pools
     public const int InitialBulletPoolCapacity = 150;

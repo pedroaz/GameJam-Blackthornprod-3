@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class Ship : MonoBehaviour
@@ -11,9 +12,15 @@ public class Ship : MonoBehaviour
     EventMessages.HealthChanged healthChangedEvent = new EventMessages.HealthChanged();
     EventMessages.GameOver gameOverEvent = new EventMessages.GameOver();
 
+    // Ship stats
+    float health = 100;
+
     //Shooting support
     Timer shootTimer;
     bool canShoot = true;
+
+    //Support for the death animation
+    bool isDieing = false;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +50,9 @@ public class Ship : MonoBehaviour
             MenuManager.IsGamePaused = true;
             MenuManager.GotoMenu(MenuNames.PauseMenu);
         }
+
+        // do not accept inputs while the death animations are going on
+        if (isDieing) return;
 
         // Move based on input
         Vector3 position = transform.position;
@@ -118,33 +128,81 @@ public class Ship : MonoBehaviour
     }
 
     /// <summary>
-    /// Clamps the ship in the screen
+    /// Processes trigger collisions with other game objects
     /// </summary>
-    void ClampInScreen2()
+    /// <param name="other">information about the other collider</param>
+    void OnTriggerEnter2D(Collider2D other)
     {
-        // clamp position as necessary
-        Vector3 position = transform.position;
+        //Only check for collision if the ship is not dieing
+        if (isDieing) return;
 
-        //Horizontal Clamp
-        if (position.x + colliderHalfWidth > ScreenUtils.ScreenRight)
-        {
-            position.x = ScreenUtils.ScreenRight - colliderHalfWidth;
-        }
-        else if (position.x - colliderHalfWidth < ScreenUtils.ScreenLeft)
-        {
-            position.x = ScreenUtils.ScreenLeft + colliderHalfWidth;
-        }
+        // Instantiate an explosion
+        GameObject explosion = ObjectPool.GetExplosion();
 
-        //Vertical Clamp
-        if (position.y + colliderHalfHeight > ScreenUtils.ScreenTop)
+        // if colliding with a bullet, return bullet to pool and take damage
+        if (other.gameObject.CompareTag("EnemyBullet"))
         {
-            position.y = ScreenUtils.ScreenTop - colliderHalfHeight;
+            ObjectPool.ReturnBullet(other.gameObject);
+            TakeDamage(GameConstants.ShipBulletCollisionDamage);
+
+            //Plays the explosion
+            explosion.transform.position = other.gameObject.transform.position;
+            explosion.SetActive(true);
+            explosion.GetComponent<Explosion>().PlayExplosion(ExplosionSize.Small);
         }
-        else if (position.y - colliderHalfHeight < ScreenUtils.ScreenBottom)
+        else if (other.gameObject.CompareTag("EnemyShip"))
         {
-            position.y = ScreenUtils.ScreenBottom + colliderHalfHeight;
+            // if colliding with an enemy, return enemy to pool and take damage
+            ObjectPool.ReturnEnemy(other.gameObject);
+            TakeDamage(GameConstants.ShipEnemyCollisionDamage);
+
+            //Plays the explosion
+            explosion.transform.position = gameObject.transform.position;
+            explosion.SetActive(true);
+            explosion.GetComponent<Explosion>().PlayExplosion(ExplosionSize.Default);
         }
-        transform.position = position;
+    }
+
+    /// <summary>
+    /// Takes the given amount of damage
+    /// </summary>
+    /// <param name="damage">damage</param>
+    void TakeDamage(int damage)
+    {
+        //Plays the player damaged sound
+        AudioManager.PlaySFX(AudioClipNames.PlayerDamage);
+
+        health -= damage;
+        if (health < 0) health = 0;
+        healthChangedEvent.Invoke(health);
+
+        if (health <= 0)
+        {
+            isDieing = true;
+            StartCoroutine(PlayerDieing());
+        }
+    }
+
+    /// <summary>
+    /// Coroutine for playing the player death animation
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator PlayerDieing()
+    {
+        //Plays the animation
+        gameObject.transform.GetChild(0).gameObject.SetActive(true);
+        gameObject.GetComponent<SpriteRenderer>().enabled = false;
+        Animator anim = gameObject.transform.GetChild(0).GetComponent<Animator>();
+
+        //Adds a small delay to let the button sound play
+        yield return new WaitForSeconds(anim.runtimeAnimatorController.animationClips[0].length - 0.05f);
+
+        // Disable all the children present
+        for(int i=0; i < gameObject.transform.childCount; i++)
+            gameObject.transform.GetChild(i).gameObject.SetActive(false);
+
+        //Dispatches the game over event
+        gameOverEvent.Invoke();
     }
 
     /// <summary>

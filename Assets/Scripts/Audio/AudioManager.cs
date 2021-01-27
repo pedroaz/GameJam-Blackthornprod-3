@@ -109,13 +109,14 @@ public class AudioManager : MonoBehaviour
     public static void StopBGM()
     {
         //Checks if SFX are playing and stop them as needed
-        if (audioSource_SoundEffects.isPlaying)
+        if (audioSource_SoundEffects != null && audioSource_SoundEffects.isPlaying)
         {
             audioSource_SoundEffects.clip = null;
             audioSource_SoundEffects.Stop();
         }
 
         //Stops the BGM
+        if (audioSource_BackgroundMusic == null) return;
         audioSource_BackgroundMusic.clip = null;
         audioSource_BackgroundMusic.Stop();
     }

@@ -21,4 +21,9 @@ public static class EventMessages
     /// An event that indicates that the game is over
     /// </summary>
     public class GameEnded : UnityEvent { }
+
+    /// <summary>
+    /// An event that indicates that the shields slider was changed
+    /// </summary>
+    public class ShieldsEnergyUpdated : UnityEvent<float> { }
 }
