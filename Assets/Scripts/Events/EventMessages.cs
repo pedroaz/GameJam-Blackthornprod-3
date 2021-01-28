@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using UnityEngine;
+using UnityEngine.Events;
 
 public static class EventMessages
 {
@@ -26,4 +27,9 @@ public static class EventMessages
     /// An event that indicates that the shields slider was changed
     /// </summary>
     public class ShieldsEnergyUpdated : UnityEvent<float> { }
+
+    /// <summary>
+    /// An event that indicates which upgrade was dropped on the slot with the item that was in the slot before
+    /// </summary>
+    public class UpgradeItemDroppedOnSlot : UnityEvent { }
 }

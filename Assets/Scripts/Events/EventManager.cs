@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class EventManager
@@ -16,6 +17,9 @@ public class EventManager
 
     static List<HUD> shieldChangedInvokers = new List<HUD>();
     static List<UnityAction<float>> shieldChangedListeners = new List<UnityAction<float>>();
+
+    static List<UpgradesSlot> upgradeItemDroppedInvokers = new List<UpgradesSlot>();
+    static List<UnityAction> upgradeItemDroppedListeners = new List<UnityAction>();
 
     #endregion
 
@@ -131,6 +135,34 @@ public class EventManager
             invoker.AddShieldChangedListener(listener);
         }
         shieldChangedListeners.Add(listener);
+    }
+
+    /// <summary>
+    /// Adds an Upgrade Item Droppped invoker
+    /// </summary>
+    /// <param name="invoker">invoker</param>
+    public static void AddUpgradeItemDroppedInvoker(UpgradesSlot invoker)
+    {
+        // add listeners to new invoker and add new invoker to list
+        foreach (UnityAction listener in upgradeItemDroppedListeners)
+        {
+            invoker.AddUpgradeItemDroppedListener(listener);
+        }
+        upgradeItemDroppedInvokers.Add(invoker);
+    }
+
+    /// <summary>
+    /// Adds a Upgrade Item Droppped listener
+    /// </summary>
+    /// <param name="listener">listener</param>
+    public static void AddUpgradeItemDroppedListener(UnityAction listener)
+    {
+        // add as listener to all invokers and add new listener to list
+        foreach (UpgradesSlot invoker in upgradeItemDroppedInvokers)
+        {
+            invoker.AddUpgradeItemDroppedListener(listener);
+        }
+        upgradeItemDroppedListeners.Add(listener);
     }
 
     #endregion

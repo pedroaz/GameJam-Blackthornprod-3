@@ -35,7 +35,8 @@ public class Bullet : MonoBehaviour
         bulletSprite = gameObject.GetComponent<SpriteRenderer>();
 
         //Set force vector
-        defaultForceVector = new Vector2(GameConstants.BulletImpulseForce, 0);
+        if(gameObject.CompareTag("PlayerBullet")) defaultForceVector = new Vector2(GameConstants.PlayerBulletImpulseForce, 0);
+        if(gameObject.CompareTag("EnemyBullet")) defaultForceVector = new Vector2(GameConstants.EnemyBulletImpulseForce, 0);
     }
 
     // Update is called once per frame

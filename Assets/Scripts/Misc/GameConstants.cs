@@ -13,7 +13,8 @@ public class GameConstants
     public const float ShieldBaseProtectionPercent = 0.8f;
 
     // Bullets
-    public const float BulletImpulseForce = 20f;
+    public const float EnemyBulletImpulseForce = 5f;
+    public const float PlayerBulletImpulseForce = 20f;
 
     // Enemy Ships
     public const float EnemySpawnDelaySeconds = 1.0f;

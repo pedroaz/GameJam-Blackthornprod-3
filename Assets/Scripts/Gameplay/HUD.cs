@@ -17,6 +17,9 @@ public class HUD : MonoBehaviour
     [SerializeField]
     Slider shieldsSlider;
 
+    [SerializeField]
+    Slider upgradesSlider;
+
     /// <summary>
     /// Awake is called before Start
     /// </summary>
@@ -57,6 +60,9 @@ public class HUD : MonoBehaviour
     {
         //Updates the value of the shield
         shieldChangedEvent.Invoke(shieldsSlider.value);
+
+        //Updates teh upgrades bar
+        upgradesSlider.value = 1 - shieldsSlider.value;
     }
 
     /// <summary>
