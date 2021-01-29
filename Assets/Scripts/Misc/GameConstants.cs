@@ -46,6 +46,7 @@ public class GameConstants
 
     // HUD
     public static float ShieldSliderStep = 0.005f;
+    public static int SecondsUntilEnd = 60;
 
     // Object Pools
     public const int InitialBulletPoolCapacity = 150;

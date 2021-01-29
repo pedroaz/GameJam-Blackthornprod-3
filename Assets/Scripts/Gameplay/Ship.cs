@@ -244,7 +244,7 @@ public class Ship : MonoBehaviour
         if (other.gameObject.CompareTag("EnemyBullet"))
         {
             ObjectPool.ReturnBullet(other.gameObject);
-            //TakeDamage(GameConstants.ShipBulletCollisionDamage);
+            TakeDamage(GameConstants.ShipBulletCollisionDamage);
 
             //Plays the explosion
             explosion.transform.position = other.gameObject.transform.position;

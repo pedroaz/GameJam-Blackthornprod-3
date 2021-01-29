@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
 {
+    //Timers
+    Timer progressTimer;
+
     //Game Ended support
     EventMessages.GameEnded gameEndedEvent = new EventMessages.GameEnded();
     bool gameEnded = false;
@@ -16,6 +19,9 @@ public class HUD : MonoBehaviour
 
     [SerializeField]
     Slider healthBar;
+
+    [SerializeField]
+    Slider progressBar;
 
     [SerializeField]
     Slider shieldsSlider;
@@ -47,6 +53,12 @@ public class HUD : MonoBehaviour
     {
         // Sends an event to update the shield value at the start of the game
         shieldChangedEvent.Invoke(shieldsSlider.value);
+
+        //Setup level timer
+        progressTimer = gameObject.AddComponent<Timer>();
+        progressTimer.Duration = GameConstants.SecondsUntilEnd;
+        progressTimer.AddTimerFinishedListener(HandleGameEndedTimer);
+        progressTimer.Run();
     }
 
     // Update is called once per frame
@@ -61,6 +73,9 @@ public class HUD : MonoBehaviour
         {
             shieldsSlider.value -= GameConstants.ShieldSliderStep;
         }
+
+        //Updates the progress slider
+        progressBar.value = (GameConstants.SecondsUntilEnd - progressTimer.SecondsLeft) / GameConstants.SecondsUntilEnd;
     }
 
     /// <summary>
@@ -173,6 +188,14 @@ public class HUD : MonoBehaviour
     {
         // Update the state of the upgrades
         UpgradesSliderChanged();
+    }
+
+    /// <summary>
+    /// Handles the timer ending
+    /// </summary>
+    void HandleGameEndedTimer()
+    {
+        gameEndedEvent.Invoke();
     }
 
     /// <summary>
