@@ -143,6 +143,11 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         {
             Rect.anchoredPosition = initialSlot.Rect.anchoredPosition;
         }
+        else
+        {
+            // Plays the Upgrade dropped in slot sound
+            AudioManager.PlaySFX(AudioClipNames.UpgradeDroppedInSlot);
+        }
     }
 
     /// <summary>

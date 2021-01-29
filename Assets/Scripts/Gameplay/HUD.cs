@@ -16,6 +16,8 @@ public class HUD : MonoBehaviour
 
     //Upgrades support
     EventMessages.UpgradesUpdated upgradesUpdatedEvent = new EventMessages.UpgradesUpdated();
+    bool[] bUpgradeSlotSoundPlayed = new bool[3] { false, false, false };
+    float upgradeStep;
 
     [SerializeField]
     Slider healthBar;
@@ -59,6 +61,9 @@ public class HUD : MonoBehaviour
         progressTimer.Duration = GameConstants.SecondsUntilEnd;
         progressTimer.AddTimerFinishedListener(HandleGameEndedTimer);
         progressTimer.Run();
+
+        //Calculate the value of each step
+        upgradeStep = upgradesSlider.maxValue / upgradeSlots.Length;
     }
 
     // Update is called once per frame
@@ -95,52 +100,66 @@ public class HUD : MonoBehaviour
     /// </summary>
     public void UpgradesSliderChanged()
     {
-        //Calculate the value of each step
-        float stepValue = upgradesSlider.maxValue / upgradeSlots.Length;
-
         // Check if the bar is bellow the first activation step
-        if (upgradesSlider.value >= 0 && upgradesSlider.value < stepValue / 2)
+        if (upgradesSlider.value >= 0 && upgradesSlider.value < upgradeStep / 2)
         {
+            //Send ths necessary events
             upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, false, 0);
             upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, false, 0);
             upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
 
+            //Updates the animation
             ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, false);
             ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, false);
             ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
         }
         // Check if the first upgrade is enabled
-        if (upgradesSlider.value >= stepValue / 2 && upgradesSlider.value < 3 * stepValue / 2)
+        if (upgradesSlider.value >= upgradeStep / 2 && upgradesSlider.value < 3 * upgradeStep / 2)
         {
+            //Send ths necessary events
             upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
             upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, false, 0);
             upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
 
+            //Updates the animation
             ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
             ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, false);
             ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
+
+            //Updates the sound variable
+            bUpgradeSlotSoundPlayed[0] = false;
         }
         // Check if the first and second upgrades are enabled
-        else if (upgradesSlider.value >= 3 * stepValue / 2 && upgradesSlider.value < 5 * stepValue / 2)
+        else if (upgradesSlider.value >= 3 * upgradeStep / 2 && upgradesSlider.value < 5 * upgradeStep / 2)
         {
+            //Send ths necessary events
             upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
             upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, true, 2);
             upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
 
+            //Updates the animation
             ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
             ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, true);
             ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
+
+            //Updates the sound variable
+            bUpgradeSlotSoundPlayed[1] = false;
         }
         // Check if the first, second and third upgrades are enabled
-        else if (upgradesSlider.value >= 5 * stepValue / 2 && upgradesSlider.value <= upgradesSlider.maxValue)
+        else if (upgradesSlider.value >= 5 * upgradeStep / 2 && upgradesSlider.value <= upgradesSlider.maxValue)
         {
+            //Send ths necessary events
             upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
             upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, true, 2);
             upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, true, 3);
 
+            //Updates the animation
             ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
             ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, true);
             ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, true);
+
+            //Updates the sound variable
+            bUpgradeSlotSoundPlayed[2] = false;
         }
     }
 

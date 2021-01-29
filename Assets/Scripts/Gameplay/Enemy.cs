@@ -166,6 +166,9 @@ public class Enemy : MonoBehaviour
         // Checks if the ship took damage
         else if (collision.gameObject.CompareTag("PlayerBullet"))
         {
+            //Plays the enemy damage sound
+            AudioManager.PlaySFX(AudioClipNames.EnemyDamage);
+
             //Return the bullet to the pool
             ObjectPool.ReturnBullet(collision.gameObject);
 
@@ -211,6 +214,9 @@ public class Enemy : MonoBehaviour
         if (health < 0)
         {
             health = 0;
+
+            //Plays the enemy damage sound
+            AudioManager.PlaySFX(AudioClipNames.EnemyDeath);
 
             // If enemy is dead return it to the pool
             ObjectPool.ReturnEnemy(gameObject);

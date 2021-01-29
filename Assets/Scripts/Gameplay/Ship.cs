@@ -290,6 +290,9 @@ public class Ship : MonoBehaviour
     /// <returns></returns>
     IEnumerator PlayerDieing()
     {
+        //Plays the player dead sound
+        AudioManager.PlaySFX(AudioClipNames.PlayerDeath);
+
         //Plays the animation
         gameObject.transform.GetChild(0).gameObject.SetActive(true);
         gameObject.GetComponent<SpriteRenderer>().enabled = false;

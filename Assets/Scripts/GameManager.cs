@@ -18,8 +18,8 @@ public class GameManager : MonoBehaviour
         //Stops the currently playing audio
         AudioManager.StopBGM();
 
-        //Gets a random BGM music to play
-        int randomMusicNumber = Random.Range(0, 3);
+        //Gets a random BGM music to play (Currently only 1 music available)
+        int randomMusicNumber = Random.Range(0, 1);
         AudioClipNames randomAudioClip;
         switch (randomMusicNumber)
         {

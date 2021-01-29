@@ -63,6 +63,9 @@ public class PauseMenuController : MonoBehaviour
     /// </summary>
     private IEnumerator QuitButtonClickedExec()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
         //Adds a small delay to let the button sound play
         yield return new WaitForSeconds(AudioManager.GetAudioClipLength(AudioClipNames.ButtonClick) / 2);
 

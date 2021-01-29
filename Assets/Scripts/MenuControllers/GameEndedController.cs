@@ -56,6 +56,10 @@ public class GameEndedController : MonoBehaviour
     /// </summary>
     public void TryAgainButtonClick()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
+        //Loads the same scene again
         MenuManager.TryCurrentSceneAgain();
     }
 
@@ -76,6 +80,9 @@ public class GameEndedController : MonoBehaviour
     /// </summary>
     private IEnumerator QuitButtonClickedExec()
     {
+        //Plays the button sound
+        AudioManager.PlaySFX(AudioClipNames.ButtonClick);
+
         //Adds a small delay to let the button sound play
         yield return new WaitForSeconds(AudioManager.GetAudioClipLength(AudioClipNames.ButtonClick) / 2);
 

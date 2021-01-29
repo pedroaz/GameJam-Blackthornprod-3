@@ -10,6 +10,14 @@ public enum AudioClipNames
     ButtonClick,
     PlayerBullet,
     PlayerDamage,
+    PlayerDeath,
+    ShieldFullEnergy,
+    ShieldDamage,
+    UpgradeDroppedInSlot,
+    UpgradeUpdateSingle,
+    UpgradeUpdateDuo,
+    UpgradeUpdateTrio,
+    EnemyDamage,
     EnemyDeath,
     MainMenuMusic,
     GameplayMusic0,
@@ -59,9 +67,17 @@ public class AudioManager : MonoBehaviour
         audioSource_SoundEffects = sourceSFX;
 
         //Load all the audio clips
-        audioClips.Add(AudioClipNames.ButtonClick, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.ButtonClick, Resources.Load<AudioClip>("Audio/Effects/sfx_buttonClick"));
         audioClips.Add(AudioClipNames.PlayerBullet, Resources.Load<AudioClip>("Audio/Effects/"));
         audioClips.Add(AudioClipNames.PlayerDamage, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.PlayerDeath, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.ShieldFullEnergy, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.ShieldDamage, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.UpgradeDroppedInSlot, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.UpgradeUpdateSingle, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.UpgradeUpdateDuo, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.UpgradeUpdateTrio, Resources.Load<AudioClip>("Audio/Effects/"));
+        audioClips.Add(AudioClipNames.EnemyDamage, Resources.Load<AudioClip>("Audio/Effects/"));
         audioClips.Add(AudioClipNames.EnemyDeath, Resources.Load<AudioClip>("Audio/Effects/"));
 
         audioClips.Add(AudioClipNames.MainMenuMusic, Resources.Load<AudioClip>("Audio/BGM/"));

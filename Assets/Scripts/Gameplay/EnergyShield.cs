@@ -23,6 +23,9 @@ public class EnergyShield : MonoBehaviour
         // if colliding with a bullet, return bullet to pool and take damage
         if (other.gameObject.CompareTag("EnemyBullet"))
         {
+            //Plays the shield damaged sound
+            AudioManager.PlaySFX(AudioClipNames.ShieldDamage);
+
             // Rolls a random chance to check if the bullets makes it past
             float bulletChance = (float) Random.Range(0, 100)/100;
 
@@ -47,5 +50,11 @@ public class EnergyShield : MonoBehaviour
         Color currentColor = shieldRenderer.color;
         currentColor.a = energyValue;
         shieldRenderer.color = currentColor;
+
+        //Plays the shield full energy sound
+        if (shieldCurrentEnergy >= 1.0f)
+        {
+            AudioManager.PlaySFX(AudioClipNames.ShieldFullEnergy);
+        }
     }
 }
