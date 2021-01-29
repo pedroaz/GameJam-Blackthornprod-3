@@ -11,6 +11,9 @@ public class HUD : MonoBehaviour
     //Shield changed support
     EventMessages.ShieldsEnergyUpdated shieldChangedEvent = new EventMessages.ShieldsEnergyUpdated();
 
+    //Upgrades support
+    EventMessages.UpgradesUpdated upgradesUpdatedEvent = new EventMessages.UpgradesUpdated();
+
     [SerializeField]
     Slider healthBar;
 
@@ -19,6 +22,9 @@ public class HUD : MonoBehaviour
 
     [SerializeField]
     Slider upgradesSlider;
+
+    [SerializeField]
+    UpgradesSlot[] upgradeSlots = new UpgradesSlot[3];
 
     /// <summary>
     /// Awake is called before Start
@@ -30,6 +36,10 @@ public class HUD : MonoBehaviour
         //Add as event invoker for events
         EventManager.AddGameEndedInvoker(this);
         EventManager.AddShieldChangedInvoker(this);
+        EventManager.AddUpgradesUpdatedInvoker(this);
+
+        //Adds this as a listener to the Item Changed event
+        EventManager.AddUpgradeItemDroppedListener(HandleUpgradeItemDropped);
     }
 
     // Start is called before the first frame update
@@ -61,8 +71,90 @@ public class HUD : MonoBehaviour
         //Updates the value of the shield
         shieldChangedEvent.Invoke(shieldsSlider.value);
 
-        //Updates teh upgrades bar
+        //Updates the upgrades bar
         upgradesSlider.value = 1 - shieldsSlider.value;
+    }
+
+    /// <summary>
+    /// Checks if the slider for the upgrades changed, the upgrade is enabled once the slider reaches half of each step
+    /// </summary>
+    public void UpgradesSliderChanged()
+    {
+        //Calculate the value of each step
+        float stepValue = upgradesSlider.maxValue / upgradeSlots.Length;
+
+        // Check if the bar is bellow the first activation step
+        if (upgradesSlider.value >= 0 && upgradesSlider.value < stepValue / 2)
+        {
+            upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, false, 0);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, false, 0);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
+
+            ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, false);
+            ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, false);
+            ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
+        }
+        // Check if the first upgrade is enabled
+        if (upgradesSlider.value >= stepValue / 2 && upgradesSlider.value < 3 * stepValue / 2)
+        {
+            upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, false, 0);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
+
+            ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
+            ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, false);
+            ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
+        }
+        // Check if the first and second upgrades are enabled
+        else if (upgradesSlider.value >= 3 * stepValue / 2 && upgradesSlider.value < 5 * stepValue / 2)
+        {
+            upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, true, 2);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, false, 0);
+
+            ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
+            ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, true);
+            ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, false);
+        }
+        // Check if the first, second and third upgrades are enabled
+        else if (upgradesSlider.value >= 5 * stepValue / 2 && upgradesSlider.value <= upgradesSlider.maxValue)
+        {
+            upgradesUpdatedEvent.Invoke(upgradeSlots[0].CurrentUpgradeInSlot.UpgradeType, true, 1);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[1].CurrentUpgradeInSlot.UpgradeType, true, 2);
+            upgradesUpdatedEvent.Invoke(upgradeSlots[2].CurrentUpgradeInSlot.UpgradeType, true, 3);
+
+            ToggleUpgradeSlotAnimation(upgradeSlots[0].CurrentUpgradeInSlot.gameObject, true);
+            ToggleUpgradeSlotAnimation(upgradeSlots[1].CurrentUpgradeInSlot.gameObject, true);
+            ToggleUpgradeSlotAnimation(upgradeSlots[2].CurrentUpgradeInSlot.gameObject, true);
+        }
+    }
+
+    /// <summary>
+    /// Enables or disables the blinking animation on an upgrade slot
+    /// </summary>
+    /// <param name="upgradeSlot">Slot to be updated</param>
+    /// <param name="enableAnim">Should enable the anim</param>
+    void ToggleUpgradeSlotAnimation(GameObject upgradeSlot, bool enableAnim)
+    {
+        Animator animator = upgradeSlot.GetComponent<Animator>();
+
+        // Start or stop the animation
+        if (enableAnim)
+        {
+            // Only play the animation when it's not already playing
+            if (animator.speed != 1.0f)
+            {
+                // Play the animation at normal speed
+                animator.speed = 1.0f;
+                animator.Play("UpgradeSlot", 0, 1.0f);
+            }
+        }
+        else
+        {
+            // Resetting the animation to the first frame and stopping the animation
+            animator.speed = 0.0f;
+            animator.Play("UpgradeSlot",0, 0.0f);
+        }
     }
 
     /// <summary>
@@ -72,6 +164,15 @@ public class HUD : MonoBehaviour
     void HandleHealthChangedEvent(float health)
     {
         healthBar.value = health / GameConstants.MaxShipHealth;
+    }
+
+    /// <summary>
+    /// Handles when a Upgrade Item is dropped into a slot
+    /// </summary>
+    private void HandleUpgradeItemDropped()
+    {
+        // Update the state of the upgrades
+        UpgradesSliderChanged();
     }
 
     /// <summary>
@@ -90,5 +191,14 @@ public class HUD : MonoBehaviour
     public void AddShieldChangedListener(UnityAction<float> listener)
     {
         shieldChangedEvent.AddListener(listener);
+    }
+
+    /// <summary>
+    /// Adds the given listener for the UpgradesUpdated event
+    /// </summary>
+    /// <param name="listener">listener</param>
+    public void AddUpgradesUpdatedListener(UnityAction<UpgradeTypes, bool, int> listener)
+    {
+        upgradesUpdatedEvent.AddListener(listener);
     }
 }

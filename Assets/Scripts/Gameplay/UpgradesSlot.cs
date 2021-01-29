@@ -17,6 +17,11 @@ public class UpgradesSlot : MonoBehaviour, IDropHandler
     /// </summary>
     public RectTransform Rect { get { return rect; } }
 
+    /// <summary>
+    /// What upgrade is currently in this slot
+    /// </summary>
+    public UpgradesItem CurrentUpgradeInSlot { get { return currentUpgradeInSlot; } }
+
     void Awake()
     {
         //Saving the transform for later
@@ -34,8 +39,8 @@ public class UpgradesSlot : MonoBehaviour, IDropHandler
     {
         if(eventData.pointerDrag != null)
         {
-            //Fires the required event
-            upgradeItemDroppedEvent.Invoke();
+            //Updates the value of the droppedOnSlot variable
+            eventData.pointerDrag.GetComponent<UpgradesItem>().DroppedOnSlot = true;
 
             //Updates the old upgrade's slot to the new item's one
             currentUpgradeInSlot.InitialSlot = eventData.pointerDrag.GetComponent<UpgradesItem>().InitialSlot;
@@ -54,6 +59,9 @@ public class UpgradesSlot : MonoBehaviour, IDropHandler
 
             //Updates the upgrade's slot number
             currentUpgradeInSlot.InitialSlot = this;
+
+            //Fires the necessary event
+            upgradeItemDroppedEvent.Invoke();
         }
     }
 

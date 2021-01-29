@@ -21,6 +21,9 @@ public class EventManager
     static List<UpgradesSlot> upgradeItemDroppedInvokers = new List<UpgradesSlot>();
     static List<UnityAction> upgradeItemDroppedListeners = new List<UnityAction>();
 
+    static List<HUD> upgradesUpdatedInvokers = new List<HUD>();
+    static List<UnityAction<UpgradeTypes, bool, int>> upgradesUpdatedListeners = new List<UnityAction<UpgradeTypes, bool, int>>();
+
     #endregion
 
     #region Public methods
@@ -152,7 +155,7 @@ public class EventManager
     }
 
     /// <summary>
-    /// Adds a Upgrade Item Droppped listener
+    /// Adds an Upgrade Item Droppped listener
     /// </summary>
     /// <param name="listener">listener</param>
     public static void AddUpgradeItemDroppedListener(UnityAction listener)
@@ -163,6 +166,34 @@ public class EventManager
             invoker.AddUpgradeItemDroppedListener(listener);
         }
         upgradeItemDroppedListeners.Add(listener);
+    }
+
+    /// <summary>
+    /// Adds an UpgradesUpdated invoker
+    /// </summary>
+    /// <param name="invoker">invoker</param>
+    public static void AddUpgradesUpdatedInvoker(HUD invoker)
+    {
+        // add listeners to new invoker and add new invoker to list
+        foreach (UnityAction<UpgradeTypes, bool, int> listener in upgradesUpdatedListeners)
+        {
+            invoker.AddUpgradesUpdatedListener(listener);
+        }
+        upgradesUpdatedInvokers.Add(invoker);
+    }
+
+    /// <summary>
+    /// Adds an UpgradesUpdated listener
+    /// </summary>
+    /// <param name="listener">listener</param>
+    public static void AddUpgradesUpdatedListener(UnityAction<UpgradeTypes, bool, int> listener)
+    {
+        // add as listener to all invokers and add new listener to list
+        foreach (HUD invoker in upgradesUpdatedInvokers)
+        {
+            invoker.AddUpgradesUpdatedListener(listener);
+        }
+        upgradesUpdatedListeners.Add(listener);
     }
 
     #endregion

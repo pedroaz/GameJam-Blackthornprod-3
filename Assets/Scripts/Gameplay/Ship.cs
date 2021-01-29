@@ -15,12 +15,18 @@ public class Ship : MonoBehaviour
     // Ship stats
     float health = 100;
 
-    //Shooting support
+    // Shooting support
     Timer shootTimer;
     bool canShoot = true;
 
-    //Support for the death animation
+    // Support for the death animation
     bool isDieing = false;
+
+    // Upgrades support
+    bool bIsRegenEnabled = false;
+    int regenMultiplier = 1;
+    int bulletLevel = 0;
+    float speedUpgradeMultiplier = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +40,9 @@ public class Ship : MonoBehaviour
         // add as event invoker for events
         EventManager.AddHealthChangedInvoker(this);
         EventManager.AddGameOverInvoker(this);
+
+        //Adds this as a listener to the UpgradesUpdated event
+        EventManager.AddUpgradesUpdatedListener(HandleUpgradesUpdatedEvent);
 
         // set up shoot timer
         shootTimer = gameObject.AddComponent<Timer>();
@@ -59,23 +68,23 @@ public class Ship : MonoBehaviour
         float verticalInput = Input.GetAxis("Vertical");
         if (verticalInput != 0)
         {
-            position.y += verticalInput * GameConstants.ShipMoveUnitsPerSecond * Time.deltaTime;
+            position.y += verticalInput * speedUpgradeMultiplier * GameConstants.ShipMoveUnitsPerSecond * Time.deltaTime;
         }
 
         float horizontalInput = Input.GetAxis("Horizontal");
         if (horizontalInput != 0)
         {
-            position.x += horizontalInput * GameConstants.ShipMoveUnitsPerSecond * Time.deltaTime;
+            position.x += horizontalInput * speedUpgradeMultiplier * GameConstants.ShipMoveUnitsPerSecond * Time.deltaTime;
         }
 
         // move character to new position and clamp in screen
         transform.position = position;
         transform.position = CommonFunctions.ClampShipInScreen(transform.position, colliderHalfWidth, colliderHalfHeight);
 
-        // check for shooting input
+        // Check for shooting input
         if (Input.GetAxis("Shoot") > 0)
         {
-            // only shoot if cooldown is up
+            // Only shoot if cooldown is up
             if (canShoot)
             {
                 canShoot = false;
@@ -83,19 +92,30 @@ public class Ship : MonoBehaviour
 
                 ShootBullet();
 
-                //Plays the shooting sound
+                // Plays the shooting sound
                 AudioManager.PlaySFX(AudioClipNames.PlayerBullet);
             }
         }
         else
         {
-            //Resets the cooldown if the player is pressing continuously
+            // Resets the cooldown if the player is pressing continuously
             canShoot = true;
+        }
+
+        // Check for enabled Regen Upgrade
+        if (bIsRegenEnabled)
+        {
+            // Only recover health if there's damage
+            if(health < GameConstants.MaxShipHealth)
+            {
+                health += regenMultiplier * GameConstants.PlayerRecoveryUpgradePercent * GameConstants.MaxShipHealth;
+                healthChangedEvent.Invoke(health);
+            }
         }
     }
 
     /// <summary>
-    /// Shoots bullets
+    /// Shoots bullets depending on the bulletLevel of the ship
     /// </summary>
     void ShootBullet()
     {
@@ -104,18 +124,99 @@ public class Ship : MonoBehaviour
         BulletDirection[] bulletDirection = null;
 
         //Prepares the necessary variables
-        //Creates the bullet vector
-        bullets = ObjectPool.GetPlayerBullets(1);
+        switch (bulletLevel)
+        {
+            case 0:
+                //Creates the bullet vector
+                bullets = ObjectPool.GetPlayerBullets(1);
 
-        //Positions the bullets at the right places
-        bulletPos = new Vector2[bullets.Length];
-        bulletPos[0] = gameObject.transform.position;
-        bulletPos[0].x += GameConstants.ShipBulletXOffset;
-        bulletPos[0].y += GameConstants.ShipBulletYOffset;
+                //Positions the bullets at the right places
+                bulletPos = new Vector2[bullets.Length];
+                bulletPos[0] = gameObject.transform.position;
+                bulletPos[0] += GameConstants.ShipBulletOffset["Central1"];
 
-        //Sets the shooting direction
-        bulletDirection = new BulletDirection[bullets.Length];
-        bulletDirection[0] = BulletDirection.Up;
+                //Sets the shooting direction
+                bulletDirection = new BulletDirection[bullets.Length];
+                bulletDirection[0] = BulletDirection.Up;
+                break;
+            case 1:
+                //Creates the bullet vector
+                bullets = ObjectPool.GetPlayerBullets(3);
+
+                //Positions the bullets at the right places
+                bulletPos = new Vector2[bullets.Length];
+                bulletPos[0] = gameObject.transform.position;
+                bulletPos[0] += GameConstants.ShipBulletOffset["Central1"];
+                bulletPos[1] = gameObject.transform.position;
+                bulletPos[1] += GameConstants.ShipBulletOffset["Central2"];
+                bulletPos[2] = gameObject.transform.position;
+                bulletPos[2] += GameConstants.ShipBulletOffset["Central3"];
+
+                //Sets the shooting direction
+                bulletDirection = new BulletDirection[bullets.Length];
+                bulletDirection[0] = BulletDirection.Up;
+                bulletDirection[1] = BulletDirection.Up;
+                bulletDirection[2] = BulletDirection.Up;
+                break;
+            case 2:
+                //Creates the bullet vector
+                bullets = ObjectPool.GetPlayerBullets(5);
+
+                //Positions the bullets at the right places
+                bulletPos = new Vector2[bullets.Length];
+                bulletPos[0] = gameObject.transform.position;
+                bulletPos[0] += GameConstants.ShipBulletOffset["Central1"];
+                bulletPos[1] = gameObject.transform.position;
+                bulletPos[1] += GameConstants.ShipBulletOffset["Central2"];
+                bulletPos[2] = gameObject.transform.position;
+                bulletPos[2] += GameConstants.ShipBulletOffset["Central3"];
+                bulletPos[3] = gameObject.transform.position;
+                bulletPos[3] += GameConstants.ShipBulletOffset["CentralLayer1Left"];
+                bulletPos[4] = gameObject.transform.position;
+                bulletPos[4] += GameConstants.ShipBulletOffset["CentralLayer1Right"];
+
+                //Sets the shooting direction
+                bulletDirection = new BulletDirection[bullets.Length];
+                bulletDirection[0] = BulletDirection.Up;
+                bulletDirection[1] = BulletDirection.Up;
+                bulletDirection[2] = BulletDirection.Up;
+                bulletDirection[3] = BulletDirection.UpLeftLayer1;
+                bulletDirection[4] = BulletDirection.UpRightLayer1;
+                break;
+            case 3:
+                //Creates the bullet vector
+                bullets = ObjectPool.GetPlayerBullets(7);
+
+                //Positions the bullets at the right places
+                bulletPos = new Vector2[bullets.Length];
+                bulletPos[0] = gameObject.transform.position;
+                bulletPos[0] += GameConstants.ShipBulletOffset["Central1"];
+                bulletPos[1] = gameObject.transform.position;
+                bulletPos[1] += GameConstants.ShipBulletOffset["Central2"];
+                bulletPos[2] = gameObject.transform.position;
+                bulletPos[2] += GameConstants.ShipBulletOffset["Central3"];
+                bulletPos[3] = gameObject.transform.position;
+                bulletPos[3] += GameConstants.ShipBulletOffset["CentralLayer1Left"];
+                bulletPos[4] = gameObject.transform.position;
+                bulletPos[4] += GameConstants.ShipBulletOffset["CentralLayer1Right"];
+                bulletPos[5] = gameObject.transform.position;
+                bulletPos[5] += GameConstants.ShipBulletOffset["CentralLayer2Left"];
+                bulletPos[6] = gameObject.transform.position;
+                bulletPos[6] += GameConstants.ShipBulletOffset["CentralLayer2Right"];
+
+                //Sets the shooting direction
+                bulletDirection = new BulletDirection[bullets.Length];
+                bulletDirection[0] = BulletDirection.Up;
+                bulletDirection[1] = BulletDirection.Up;
+                bulletDirection[2] = BulletDirection.Up;
+                bulletDirection[3] = BulletDirection.UpLeftLayer1;
+                bulletDirection[4] = BulletDirection.UpRightLayer1;
+                bulletDirection[5] = BulletDirection.UpLeftLayer2;
+                bulletDirection[6] = BulletDirection.UpRightLayer2;
+                break;
+            default:
+                break;
+        }
 
         //Shoot bullets
         for (int i = 0; i < bullets.Length; i++)
@@ -143,7 +244,7 @@ public class Ship : MonoBehaviour
         if (other.gameObject.CompareTag("EnemyBullet"))
         {
             ObjectPool.ReturnBullet(other.gameObject);
-            TakeDamage(GameConstants.ShipBulletCollisionDamage);
+            //TakeDamage(GameConstants.ShipBulletCollisionDamage);
 
             //Plays the explosion
             explosion.transform.position = other.gameObject.transform.position;
@@ -203,6 +304,74 @@ public class Ship : MonoBehaviour
 
         //Dispatches the game over event
         gameOverEvent.Invoke();
+    }
+
+    /// <summary>
+    /// Toggles the health upgrade on or off
+    /// </summary>
+    /// <param name="isEnabled">What should the new state be</param>
+    /// <param name="powerLevel">The power of the upgrade to be used</param>
+    void ToggleHealthUpgrade(bool isEnabled, int powerLevel)
+    {
+        bIsRegenEnabled = isEnabled;
+        regenMultiplier = powerLevel;
+    }
+
+    /// <summary>
+    /// Toggles the speed upgrade on or off
+    /// </summary>
+    /// <param name="isEnabled">What should the new state be</param>
+    /// <param name="powerLevel">The power of the upgrade to be used</param>
+    void ToggleSpeedUpgrade(bool isEnabled, int powerLevel)
+    {
+        if (isEnabled)
+        {
+            speedUpgradeMultiplier = 1 + GameConstants.PlayerSpeedIncrementStep * powerLevel;
+        }
+        else
+        {
+            speedUpgradeMultiplier = 1.0f;
+        }
+    }
+
+    /// <summary>
+    /// Toggles the weapons upgrade on or off
+    /// </summary>
+    /// <param name="isEnabled">What should the new state be</param>
+    /// <param name="powerLevel">The power of the upgrade to be used</param>
+    void ToggleWeaponsUpgrade(bool isEnabled, int powerLevel)
+    {
+        if (isEnabled)
+        {
+            bulletLevel = powerLevel;
+        }
+        else
+        {
+            bulletLevel = 0;
+        }
+    }
+
+    /// <summary>
+    /// Handle for updating the ships upgrades
+    /// </summary>
+    /// <param name="upgradeType">The upgrade that will be updated</param>
+    /// <param name="isEnabled">Should enable or disable this upgrade</param>
+    /// <param name="powerLevel">The power of the upgrade to use</param>
+    void HandleUpgradesUpdatedEvent(UpgradeTypes upgradeType, bool isEnabled, int powerLevel)
+    {
+        // Update the correct upgrade
+        switch (upgradeType)
+        {
+            case UpgradeTypes.Health:
+                ToggleHealthUpgrade(isEnabled, powerLevel);
+                break;
+            case UpgradeTypes.Speed:
+                ToggleSpeedUpgrade(isEnabled, powerLevel);
+                break;
+            case UpgradeTypes.Weapons:
+                ToggleWeaponsUpgrade(isEnabled, powerLevel);
+                break;
+        }
     }
 
     /// <summary>

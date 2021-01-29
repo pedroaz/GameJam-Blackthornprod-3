@@ -29,7 +29,12 @@ public static class EventMessages
     public class ShieldsEnergyUpdated : UnityEvent<float> { }
 
     /// <summary>
-    /// An event that indicates which upgrade was dropped on the slot with the item that was in the slot before
+    /// An event that indicates what are the new update slots for where the new item now is and was before
     /// </summary>
     public class UpgradeItemDroppedOnSlot : UnityEvent { }
+
+    /// <summary>
+    /// An event to update the upgrades of the ship (type of upgrade, isEnabled and powerLevel)
+    /// </summary>
+    public class UpgradesUpdated : UnityEvent<UpgradeTypes, bool, int> { }
 }

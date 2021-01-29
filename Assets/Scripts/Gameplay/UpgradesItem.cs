@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+public enum UpgradeTypes
+{
+    Weapons,
+    Speed,
+    Health
+}
+
 public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     [SerializeField]
@@ -11,10 +18,14 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
     [SerializeField]
     private UpgradesSlot initialSlot;
 
+    [SerializeField]
+    private UpgradeTypes upgradeType;
+
     private RectTransform rect;
     private CanvasGroup canvasGroup;
     private bool droppedOnSlot = false;
     private List<UpgradesItem> upgradeItemsList = new List<UpgradesItem>();
+    private float originalTransparency;
 
     /// <summary>
     /// The slot where this item is positioned
@@ -26,20 +37,35 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
     /// </summary>
     public RectTransform Rect { get { return rect; } }
 
+    /// <summary>
+    /// Accessor for the droppedOnSlot variable
+    /// </summary>
+    public bool DroppedOnSlot { get { return droppedOnSlot; } set { droppedOnSlot = value; } }
+
+    // <summary>
+    /// Accessor for the upgradeType variable
+    /// </summary>
+    public UpgradeTypes UpgradeType { get { return upgradeType; } }
+
     void Awake()
     {
         //Saving the transform for later
         rect = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();
-
-        //Adds this as a listener to the Shield Changed event
-        EventManager.AddUpgradeItemDroppedListener(HandleUpgradeItemDropped);
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        // Creates the Items list
         upgradeItemsList = new List<UpgradesItem>(FindObjectsOfType<UpgradesItem>());
+
+        // Sets the upgrade item animations to looping and initially not playing
+        gameObject.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.wrapMode = WrapMode.Loop;
+        gameObject.GetComponent<Animator>().speed = 0.0f;
+
+        // Saves the transparency set in the inspector
+        originalTransparency = canvasGroup.alpha;
     }
 
     /// <summary>
@@ -59,7 +85,7 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         }
 
         //Add transparency
-        canvasGroup.alpha = 0.75f;
+        canvasGroup.alpha = 0.75f * originalTransparency;
 
         //Updates the droppedOnSlot variable
         droppedOnSlot = false;
@@ -98,7 +124,7 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         }
 
         //Removes transparency
-        canvasGroup.alpha = 1.0f;
+        canvasGroup.alpha = originalTransparency;
 
         StartCoroutine(CheckDroppedOnSlot());
     }
@@ -135,13 +161,5 @@ public class UpgradesItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
     public void UpdateDroppedOnSlot(bool newValue)
     {
        droppedOnSlot = newValue;
-    }
-
-    /// <summary>
-    /// Handles when the Upgrade Item is dropped into a slot
-    /// </summary>
-    private void HandleUpgradeItemDropped()
-    {
-        droppedOnSlot = true;
     }
 }

@@ -5,13 +5,20 @@
 /// </summary>
 public enum BulletDirection
 {
+    Random,
     Up,
+    UpLeftLayer1,
+    UpLeftLayer2,
+    UpRightLayer1,
+    UpRightLayer2,
     Down,
-    Random
 }
 
 public class Bullet : MonoBehaviour
 {
+    Timer changeDirectionLayer1Timer;
+    Timer changeDirectionLayer2Timer;
+
     Rigidbody2D rb2d;
 
     Vector2 defaultForceVector;
@@ -37,6 +44,16 @@ public class Bullet : MonoBehaviour
         //Set force vector
         if(gameObject.CompareTag("PlayerBullet")) defaultForceVector = new Vector2(GameConstants.PlayerBulletImpulseForce, 0);
         if(gameObject.CompareTag("EnemyBullet")) defaultForceVector = new Vector2(GameConstants.EnemyBulletImpulseForce, 0);
+
+        //Adds the layer 1 timer in case it is needed
+        changeDirectionLayer1Timer = gameObject.AddComponent<Timer>();
+        changeDirectionLayer1Timer.Duration = 0.05f;
+        changeDirectionLayer1Timer.AddTimerFinishedListener(HandleChangeDirection);
+
+        //Adds the layer 2 timer in case it is needed
+        changeDirectionLayer2Timer = gameObject.AddComponent<Timer>();
+        changeDirectionLayer2Timer.Duration = 0.075f;
+        changeDirectionLayer2Timer.AddTimerFinishedListener(HandleChangeDirection);
     }
 
     // Update is called once per frame
@@ -72,6 +89,22 @@ public class Bullet : MonoBehaviour
             case BulletDirection.Random:
                 forceVector = Quaternion.AngleAxis(Random.Range(-120,-60), Vector3.forward) * forceVector;
                 break;
+            case BulletDirection.UpLeftLayer1:
+                forceVector = Quaternion.AngleAxis(105, Vector3.forward) * forceVector;
+                changeDirectionLayer1Timer.Run();
+                break;
+            case BulletDirection.UpLeftLayer2:
+                forceVector = Quaternion.AngleAxis(120, Vector3.forward) * forceVector;
+                changeDirectionLayer2Timer.Run();
+                break;
+            case BulletDirection.UpRightLayer1:
+                forceVector = Quaternion.AngleAxis(75, Vector3.forward) * forceVector;
+                changeDirectionLayer1Timer.Run();
+                break;
+            case BulletDirection.UpRightLayer2:
+                forceVector = Quaternion.AngleAxis(60, Vector3.forward) * forceVector;
+                changeDirectionLayer2Timer.Run();
+                break;
             default: break;
         }
 
@@ -85,6 +118,15 @@ public class Bullet : MonoBehaviour
     public void StopMoving()
     {
         rb2d.velocity = Vector2.zero;
+    }
+
+    /// <summary>
+    /// Handles the bullets changing direction back to center
+    /// </summary>
+    void HandleChangeDirection()
+    {
+        StopMoving();
+        StartMoving(BulletDirection.Up);
     }
 
     /// <summary>
