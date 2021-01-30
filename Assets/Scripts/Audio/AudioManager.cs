@@ -81,7 +81,7 @@ public class AudioManager : MonoBehaviour
         audioClips.Add(AudioClipNames.EnemyDeath, Resources.Load<AudioClip>("Audio/Effects/"));
 
         audioClips.Add(AudioClipNames.MainMenuMusic, Resources.Load<AudioClip>("Audio/BGM/"));
-        audioClips.Add(AudioClipNames.GameplayMusic0, Resources.Load<AudioClip>("Audio/BGM/"));
+        audioClips.Add(AudioClipNames.GameplayMusic0, Resources.Load<AudioClip>("Audio/BGM/music_stage"));
         audioClips.Add(AudioClipNames.GameplayMusic1, Resources.Load<AudioClip>("Audio/BGM/"));
         audioClips.Add(AudioClipNames.GameplayMusic2, Resources.Load<AudioClip>("Audio/BGM/"));
         audioClips.Add(AudioClipNames.GameOverMusic, Resources.Load<AudioClip>("Audio/BGM/"));
